@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NPC Customer Complaint Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-bg: #ffffff;
+      --color-text-primary: #111827;
+      --color-text-secondary: #6b7280;
+      --color-accent: #2563eb;
+      --color-accent-hover: #1d4ed8;
+      --color-input-bg: #f9fafb;
+      --color-input-border: #d1d5db;
+      --color-error: #dc2626;
+      --color-cta-bg: #000000;
+      --color-cta-hover: #222222;
+      --border-radius: 0.75rem;
+      --transition-speed: 0.3s;
+      --max-width: 1200px;
+      --card-shadow: 0 4px 16px rgba(37, 99, 235, 0.1);
+      --nav-height: 60px;
+      --sidebar-width: 260px;
+      --sidebar-bg: #f9fafb;
+      --sidebar-shadow: 2px 0 12px rgba(0,0,0,0.08);
+      --section-padding-top: 4rem;
+      --section-padding-bottom: 5rem;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', Arial, sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+      scroll-behavior: smooth;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #app-container {
+      flex: 1;
+      display: flex;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      width: 100%;
+      background: var(--color-bg);
+      box-shadow: 0 0 8px rgba(0,0,0,0.02);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+    }
+
+    /* Sidebar styles */
+    aside.sidebar {
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      box-shadow: var(--sidebar-shadow);
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      user-select: none;
+      position: sticky;
+      top: var(--nav-height);
+      height: calc(100vh - var(--nav-height));
+      border-top-right-radius: var(--border-radius);
+      border-bottom-right-radius: var(--border-radius);
+    }
+
+    aside.sidebar h2 {
+      font-weight: 700;
+      font-size: 1.75rem;
+      color: var(--color-accent);
+      margin: 0 0 1rem 0;
+      user-select: text;
+    }
+
+    /* Sidebar Nav Buttons */
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .sidebar-nav button {
+      background: none;
+      border: 2px solid transparent;
+      border-radius: var(--border-radius);
+      color: var(--color-text-secondary);
+      font-weight: 600;
+      font-size: 1.125rem;
+      cursor: pointer;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      user-select: none;
+      transition: color var(--transition-speed), background-color var(--transition-speed), border-color var(--transition-speed);
+    }
+    .sidebar-nav button:hover,
+    .sidebar-nav button:focus {
+      background-color: var(--color-accent);
+      color: white;
+      border-color: var(--color-accent-hover);
+      outline: none;
+      transform: scale(1.03);
+    }
+    .sidebar-nav button.active {
+      background-color: var(--color-accent);
+      color: white;
+      border-color: var(--color-accent-hover);
+      transform: scale(1.05);
+    }
+
+    /* Login form in sidebar */
+    form.login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 1.5rem;
+    }
+
+    form.login-form label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--color-text-secondary);
+      user-select: none;
+    }
+
+    form.login-form input[type="email"],
+    form.login-form input[type="password"] {
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border-radius: var(--border-radius);
+      border: 1.5px solid var(--color-input-border);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+      outline-offset: 2px;
+    }
+
+    form.login-form input[type="email"]:focus,
+    form.login-form input[type="password"]:focus {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+      outline: none;
+    }
+
+    form.login-form button {
+      padding: 0.75rem 1rem;
+      font-weight: 700;
+      font-size: 1rem;
+      border-radius: var(--border-radius);
+      border: none;
+      background: var(--color-accent);
+      color: white;
+      cursor: pointer;
+      transition: background-color var(--transition-speed);
+      user-select: none;
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.4);
+    }
+
+    form.login-form button:hover,
+    form.login-form button:focus {
+      background: var(--color-accent-hover);
+      outline: none;
+    }
+
+    form.login-form .login-message {
+      font-size: 0.9rem;
+      color: var(--color-error);
+      height: 1.25rem;
+      user-select: none;
+      margin-top: -1rem;
+    }
+
+    /* Main content container */
+    main.content {
+      flex: 1;
+      padding: 2rem 3rem 4rem 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 6rem;
+      overflow-y: auto;
+      min-width: 0;
+    }
+
+    /* Sticky top header */
+    header {
+      position: sticky;
+      top: 0;
+      background: var(--color-bg);
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: var(--nav-height);
+      padding: 0 2rem;
+      z-index: 1001;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+      user-select: none;
+      border-top-left-radius: var(--border-radius);
+      border-top-right-radius: var(--border-radius);
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.75rem;
+      color: var(--color-accent);
+      letter-spacing: 0.1em;
+      cursor: default;
+      user-select: text;
+    }
+
+    nav {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: var(--color-text-secondary);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 0.5rem 0;
+      transition: color var(--transition-speed), transform 0.2s ease;
+      border-bottom: 2px solid transparent;
+      user-select: none;
+    }
+    nav button:focus,
+    nav button:hover {
+      color: var(--color-accent);
+      outline: none;
+      transform: scale(1.05);
+    }
+
+    nav button.active {
+      color: var(--color-accent);
+      border-bottom-color: var(--color-accent);
+      transform: scale(1.05);
+    }
+
+    /* Sections */
+    section {
+      scroll-margin-top: calc(var(--nav-height) + 1rem);
+      padding-top: var(--section-padding-top);
+      padding-bottom: var(--section-padding-bottom);
+    }
+
+    /* Hero Section */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      gap: 1.5rem;
+      user-select: none;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: var(--color-text-primary);
+      margin: 0;
+      line-height: 1.1;
+      user-select: text;
+    }
+
+    .hero p {
+      color: var(--color-text-secondary);
+      font-size: 1.25rem;
+      margin: 0;
+      max-width: 90%;
+    }
+
+    .hero svg {
+      width: 180px;
+      height: 180px;
+      stroke: var(--color-accent);
+      stroke-width: 2;
+      fill: none;
+      user-select: none;
+      margin: 0 auto;
+    }
+
+    /* Refund Assistance CTA Button */
+    #refund-cta {
+      margin: 2rem auto 4rem;
+      display: block;
+      background-color: var(--color-cta-bg);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      padding: 1.25rem 2.5rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      cursor: pointer;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+      transition: background-color var(--transition-speed), transform 0.2s ease;
+      user-select: none;
+    }
+
+    #refund-cta:hover,
+    #refund-cta:focus {
+      background-color: var(--color-cta-hover);
+      outline: none;
+      transform: scale(1.05);
+    }
+
+    /* Services Section */
+    .services {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+      gap: 2rem;
+    }
+
+    .service-card {
+      background: var(--color-input-bg);
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      transition: box-shadow var(--transition-speed), transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      cursor: default;
+      gap: 1rem;
+    }
+
+    .service-card:hover,
+    .service-card:focus-within {
+      box-shadow: 0 12px 32px rgba(37, 99, 235, 0.25);
+      transform: translateY(-4px);
+      outline: none;
+    }
+
+    .service-icon {
+      width: 48px;
+      height: 48px;
+      stroke: var(--color-accent);
+      stroke-width: 2;
+      fill: none;
+      flex-shrink: 0;
+    }
+
+    .service-card h3 {
+      margin: 0 0 0.5rem 0;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--color-accent);
+    }
+
+    .service-card p {
+      margin: 0;
+      color: var(--color-text-secondary);
+      font-size: 1rem;
+      flex-grow: 1;
+    }
+
+    /* About Us */
+    .about-us {
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      font-size: 1.125rem;
+      color: var(--color-text-secondary);
+      user-select: none;
+    }
+    .about-us h2 {
+      font-weight: 700;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: var(--color-text-primary);
+      user-select: text;
+    }
+    .about-us p {
+      margin-top: 0;
+      line-height: 1.5;
+    }
+
+    /* Contact Us */
+    .contact-us {
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      background: var(--color-input-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      padding: 2rem;
+      text-align: center;
+      user-select: none;
+    }
+    .contact-us h2 {
+      font-weight: 700;
+      font-size: 2rem;
+      color: var(--color-text-primary);
+      margin-bottom: 1rem;
+      user-select: text;
+    }
+    .contact-us p {
+      font-size: 1.125rem;
+      color: var(--color-text-secondary);
+      margin: 0;
+      user-select: text;
+    }
+    .contact-us .phone-number {
+      margin-top: 1rem;
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--color-accent);
+      user-select: text;
+      letter-spacing: 0.05em;
+    }
+
+    /* Complaint Form */
+    form#complaint-form {
+      background: var(--color-input-bg);
+      padding: 2rem;
+      border-radius: var(--border-radius);
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      user-select: none;
+    }
+
+    .form-group {
+      position: relative;
+      display: flex;
+      flex-direction: column-reverse;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select,
+    textarea {
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 1rem 1rem 0.75rem 1rem;
+      border: 1.5px solid var(--color-input-border);
+      border-radius: var(--border-radius);
+      background: var(--color-bg);
+      color: var(--color-text-primary);
+      resize: vertical;
+      transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+      outline-offset: 2px;
+      min-height: 3.5rem;
+    }
+
+    textarea {
+      min-height: 100px;
+      padding-top: 1rem;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+      outline: none;
+    }
+
+    label {
+      position: absolute;
+      left: 1rem;
+      top: 1rem;
+      color: var(--color-text-secondary);
+      font-weight: 500;
+      font-size: 0.875rem;
+      pointer-events: none;
+      user-select: none;
+      transition:
+        transform var(--transition-speed) cubic-bezier(0.4,0,0.2,1),
+        color var(--transition-speed) cubic-bezier(0.4,0,0.2,1);
+      background: var(--color-input-bg);
+      padding: 0 0.25rem;
+    }
+
+    /* Floating label effect */
+    input:not(:placeholder-shown) + label,
+    input:focus + label,
+    textarea:not(:placeholder-shown) + label,
+    textarea:focus + label,
+    select:not([value=""]) + label,
+    select:focus + label {
+      transform: translateY(-1.5rem) scale(0.85);
+      color: var(--color-accent);
+    }
+
+    /* Error state style */
+    .error input,
+    .error textarea,
+    .error select {
+      border-color: var(--color-error);
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.3);
+    }
+
+    .error label {
+      color: var(--color-error);
+    }
+
+    .error-message {
+      font-size: 0.75rem;
+      color: var(--color-error);
+      margin-top: 0.25rem;
+      user-select: none;
+    }
+
+    button[type="submit"] {
+      padding: 1rem 1.5rem;
+      font-size: 1.125rem;
+      font-weight: 600;
+      border-radius: var(--border-radius);
+      background-color: var(--color-accent);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color var(--transition-speed), transform 0.2s ease;
+      user-select: none;
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.4);
+    }
+
+    button[type="submit"]:hover,
+    button[type="submit"]:focus {
+      background-color: var(--color-accent-hover);
+      outline: none;
+      transform: scale(1.03);
+    }
+
+    button[type="submit"]:disabled {
+      background-color: #93c5fd;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .confirmation-message {
+      padding: 1rem 1rem;
+      background: #d1fae5;
+      color: #065f46;
+      border-radius: var(--border-radius);
+      font-weight: 600;
+      text-align: center;
+      user-select: none;
+      box-shadow: 0 4px 12px rgba(5, 111, 83, 0.25);
+    }
+
+    /* Verified & Trusted Section */
+    #verified-trusted {
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 2rem;
+      background: var(--color-input-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      text-align: center;
+      user-select: none;
+    }
+    #verified-trusted h2 {
+      font-weight: 800;
+      font-size: 2.75rem;
+      margin-bottom: 1rem;
+      color: var(--color-text-primary);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem;
+      user-select: text;
+    }
+    #verified-trusted p {
+      font-size: 1.125rem;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+      margin: 0 0 2rem 0;
+      max-width: 90%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* Icon styling */
+    #verified-trusted svg {
+      stroke: var(--color-accent);
+      stroke-width: 3;
+      fill: none;
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+    }
+
+    /* Customer Comments Section */
+    #customer-comments {
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      user-select: none;
+    }
+    #customer-comments h2 {
+      font-weight: 800;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      color: var(--color-text-primary);
+      user-select: text;
+    }
+    .comment-count {
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-align: center;
+      color: var(--color-accent);
+      margin-bottom: 1.5rem;
+      user-select: text;
+    }
+    .comment-list {
+      max-height: 400px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      padding-right: 0.5rem; /* scrollbar spacing */
+      scroll-behavior: smooth;
+    }
+    .comment-card {
+      background: var(--color-input-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      padding: 1.5rem 2rem;
+      font-size: 1.125rem;
+      color: var(--color-text-primary);
+      line-height: 1.5;
+      user-select: text;
+    }
+    .comment-author {
+      margin-top: 1rem;
+      font-weight: 700;
+      color: var(--color-accent);
+      font-size: 1rem;
+      user-select: text;
+    }
+    .comment-location {
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      font-size: 0.875rem;
+      user-select: text;
+    }
+
+    /* Services icons */
+    .service-icon {
+      width: 48px;
+      height: 48px;
+      stroke: var(--color-accent);
+      stroke-width: 2;
+      fill: none;
+      flex-shrink: 0;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+      #app-container {
+        flex-direction: column;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      aside.sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        box-shadow: none;
+        padding: 1rem 1rem 2rem;
+        order: -1;
+        gap: 1.5rem;
+        border-radius: 0;
+      }
+      main.content {
+        padding: 2rem 1rem 3rem;
+      }
+      .comment-list {
+        max-height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo" tabindex="0" aria-label="NPC Logo">NPC</div>
+    <nav aria-label="Primary navigation">
+      <button type="button" data-target="home" class="nav-btn active">Home</button>
+      <button type="button" data-target="services" class="nav-btn">Services</button>
+      <button type="button" data-target="about" class="nav-btn">About Us</button>
+      <button type="button" data-target="contact" class="nav-btn">Contact Us</button>
+      <button type="button" data-target="verified-trusted" class="nav-btn">Verified &amp; Trusted</button>
+      <button type="button" data-target="customer-comments" class="nav-btn">Customer Comments</button>
+      <button type="button" data-target="privacy-policy" class="nav-btn">Privacy Policy</button>
+    </nav>
+  </header>
+  <div id="app-container">
+    <aside class="sidebar" aria-label="Sidebar with service navigation and customer login">
+      <nav class="sidebar-nav" aria-label="Sidebar navigation">
+        <button type="button" data-target="services" class="sidebar-btn">Services</button>
+        <button type="button" data-target="about" class="sidebar-btn">About Us</button>
+        <button type="button" data-target="contact" class="sidebar-btn">Contact Us</button>
+        <button type="button" data-target="verified-trusted" class="sidebar-btn">Verified &amp; Trusted</button>
+        <button type="button" data-target="customer-comments" class="sidebar-btn">Customer Comments</button>
+        <button type="button" data-target="privacy-policy" class="sidebar-btn">Privacy Policy</button>
+      </nav>
+      <h2>Customer Login</h2>
+      <form class="login-form" id="login-form" novalidate aria-describedby="login-msg" autocomplete="off">
+        <label for="login-email">Email Address</label>
+        <input type="email" id="login-email" name="login-email" autocomplete="email" required />
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" name="login-password" required />
+        <button type="submit">Login</button>
+        <div id="login-msg" class="login-message" aria-live="polite" role="alert"></div>
+      </form>
+    </aside>
+    <main class="content">
+      <section id="home" class="hero" aria-labelledby="page-title">
+        <h1 id="page-title">Submit Your NPC Complaint</h1>
+        <p>We are here to listen to your concerns. Please fill out the complaint form to help us improve our services.</p>
+        <!-- Hero SVG illustration: customer support headset icon -->
+        <svg aria-hidden="true" focusable="false" viewBox="0 0 64 64" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="32" cy="32" r="30" />
+          <path d="M20 44c0-6 24-6 24 0v6H20v-6Z" />
+          <path d="M32 14v18" />
+          <circle cx="32" cy="14" r="6" />
+          <line x1="46" y1="27" x2="53" y2="23" />
+          <line x1="18" y1="27" x2="11" y2="23" />
+        </svg>
+      </section>
+
+      <button id="refund-cta" aria-label="Refund Assistance">Refund Assistance</button>
+
+      <section id="services" aria-labelledby="services-title" hidden>
+        <h2 id="services-title" style="text-align:center; font-weight:700; font-size:2rem; margin-bottom:2rem; user-select:none;">Our Complaint Services</h2>
+        <div class="services">
+          <article class="service-card" tabindex="0" role="article" aria-label="Wrong Payment Complaint service">
+            <svg class="service-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 1v22M5 12h14" />
+            </svg>
+            <h3>Wrong Payment Complaint</h3>
+            <p>If you have been charged incorrectly or faced issues with payments, let us know and we will resolve it promptly.</p>
+          </article>
+          <article class="service-card" tabindex="0" role="article" aria-label="Wrong Transaction Complaint service">
+            <svg class="service-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M8 12l2 2 4-4" />
+            </svg>
+            <h3>Wrong Transaction Complaint</h3>
+            <p>Report any transaction mismatches or errors to ensure your account is accurate and secure.</p>
+          </article>
+          <article class="service-card" tabindex="0" role="article" aria-label="Billing Issue service">
+            <svg class="service-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect x="6" y="4" width="12" height="16" rx="2" ry="2" />
+              <path d="M9 8h6M9 12h6M9 16h6" />
+            </svg>
+            <h3>Billing Issue</h3>
+            <p>Issues related to billing, invoices, or charges can be reported for immediate attention.</p>
+          </article>
+          <article class="service-card" tabindex="0" role="article" aria-label="Support Issue service">
+            <svg class="service-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M12 2a10 10 0 0 1 10 10v5a3 3 0 0 1-3 3h-4l-5 4v-4H5a3 3 0 0 1-3-3v-3a10 10 0 0 1 10-10Z" />
+            </svg>
+            <h3>Support Issue</h3>
+            <p>Facing problems with our support services? File a complaint to help us improve your experience.</p>
+          </article>
+          <article class="service-card" tabindex="0" role="article" aria-label="Other Complaints service">
+            <svg class="service-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="9" y1="9" x2="15" y2="15" />
+              <line x1="15" y1="9" x2="9" y2="15" />
+            </svg>
+            <h3>Other Complaints</h3>
+            <p>Any other concerns or issues related to NPC services you want to bring to our notice.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="about" class="about-us" aria-labelledby="about-title" hidden>
+        <h2 id="about-title">About NPC</h2>
+        <p>
+          NPC is committed to providing the highest quality of customer service and support.
+          We are dedicated to resolving every complaint promptly and ensuring customer satisfaction.
+          Our 24/7 customer support ensures you never have to wait to get your concerns addressed.
+        </p>
+      </section>
+
+      <section id="contact" class="contact-us" aria-labelledby="contact-title" hidden>
+        <h2 id="contact-title">Contact Us</h2>
+        <p>We are available 24/7 for your queries and complaints.</p>
+        <p class="phone-number" aria-label="Contact phone number">📞 8084 935 597</p>
+        <picture>
+          <!-- Realistic Chrome browser photo from Unsplash -->
+          <source media="(min-width: 800px)" srcset="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80" />
+          <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80" alt="Realistic Chrome browser screenshot" style="margin-top:1rem; border-radius: 0.75rem; box-shadow: var(--card-shadow); width:100%; height:auto;" loading="lazy" />
+        </picture>
+      </section>
+
+      <section id="complaint-form-section" aria-labelledby="form-title" hidden>
+        <h2 id="form-title" style="text-align:center; font-weight:700; margin-bottom:1.5rem; user-select:none;">Submit Your Complaint</h2>
+        <form id="complaint-form" novalidate aria-describedby="form-desc">
+          <p id="form-desc" style="text-align:center; color: var(--color-text-secondary); max-width: 600px; margin-left:auto; margin-right:auto; margin-bottom:1.5rem; user-select:none;">
+            Fill the form below with your complaint details.
+          </p>
+          <div class="form-group" id="group-name">
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              placeholder=" " 
+              autocomplete="name" 
+              required 
+              aria-describedby="error-name" />
+            <label for="name">Full Name</label>
+            <span class="error-message" id="error-name" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group" id="group-email">
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              placeholder=" " 
+              autocomplete="email" 
+              required 
+              aria-describedby="error-email" />
+            <label for="email">Email Address</label>
+            <span class="error-message" id="error-email" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group" id="group-type">
+            <select 
+              id="complaint-type" 
+              name="complaint-type" 
+              required 
+              aria-describedby="error-type" >
+              <option value="" disabled selected hidden></option>
+              <option value="wrong-payment">Wrong Payment Complaint</option>
+              <option value="wrong-transaction">Wrong Transaction Complaint</option>
+              <option value="billing">Billing Issue</option>
+              <option value="support">Support Issue</option>
+              <option value="other">Other</option>
+            </select>
+            <label for="complaint-type">Complaint Type</label>
+            <span class="error-message" id="error-type" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group" id="group-details">
+            <textarea 
+              id="details" 
+              name="details" 
+              placeholder=" " 
+              required 
+              aria-describedby="error-details"
+              aria-label="Complaint Details"></textarea>
+            <label for="details">Complaint Details</label>
+            <span class="error-message" id="error-details" aria-live="polite"></span>
+          </div>
+
+          <button type="submit" id="submit-btn">Submit Complaint</button>
+
+          <div class="confirmation-message" id="confirmation" role="alert" aria-live="assertive" style="display:none;">
+            Thank you for submitting your complaint. We will address it promptly.
+          </div>
+        </form>
+      </section>
+
+      <section id="verified-trusted" aria-labelledby="verified-trusted-title" hidden>
+        <h2 id="verified-trusted-title">
+          <!-- Checkmark shield icon -->
+          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="48" height="48" style="flex-shrink:0;">
+            <path d="M12 1L3 5v6c0 5.25 3.75 10 9 12 5.25-2 9-6.75 9-12V5l-9-4z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+          Verified &amp; Trusted
+        </h2>
+        <p>
+          Our NPC website is fully verified and trusted by thousands of customers.
+          We use the latest security standards and best practices to ensure your data and complaints are handled securely and reliably.
+          Partner with us confidently knowing your voice will be heard and your information is safe.
+        </p>
+      </section>
+
+      <section id="customer-comments" aria-labelledby="customer-comments-title" hidden>
+        <h2 id="customer-comments-title">What Our Indian Customers Say</h2>
+        <div class="comment-count">Over 3 Lakh customers have trusted us</div>
+        <div class="comment-list" id="comment-list" role="list" aria-label="Customer comments">
+          <!-- Comments populated dynamically -->
+        </div>
+      </section>
+
+      <section id="privacy-policy" aria-labelledby="privacy-policy-title" hidden>
+        <h2 id="privacy-policy-title">Privacy Policy</h2>
+        <p>At NPC, we respect your privacy and are committed to protecting your personal information. This policy explains how we collect, use, and safeguard your data.</p>
+        <h3>Information We Collect</h3>
+        <p>We collect personal information that you provide to us, such as your name, email address, complaint details, and other relevant data necessary to process your complaints effectively.</p>
+        <h3>How We Use Your Information</h3>
+        <p>Your information is used solely for processing complaints, improving our services, and communicating with you regarding your interactions with NPC.</p>
+        <h3>Data Security</h3>
+        <p>We implement industry-standard measures to safeguard your personal information against unauthorized access, disclosure, or alteration.</p>
+        <h3>Sharing Your Information</h3>
+        <p>NPC does not sell or rent your personal information to third parties. We may share data with authorised entities for legal compliance or to provide services requested by you.</p>
+        <h3>Your Rights</h3>
+        <p>You have the right to access, correct, or request deletion of your personal data. To exercise these rights, please contact our support team.</p>
+        <h3>Policy Updates</h3>
+        <p>We may update this policy periodically. Changes will be posted prominently on our website.</p>
+        <p>For questions about this Privacy Policy, please contact us.</p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function() {
+      const form = document.getElementById('complaint-form');
+      const confirmation = document.getElementById('confirmation');
+      const navButtons = document.querySelectorAll('.nav-btn');
+      const sidebarButtons = document.querySelectorAll('.sidebar-nav button');
+      const sections = {};
+      ['home', 'services', 'about', 'contact', 'complaint-form-section', 'verified-trusted', 'customer-comments', 'privacy-policy'].forEach(id => {
+        sections[id] = document.getElementById(id);
+      });
+      const contactSection = sections.contact;
+
+      // Synchronize header nav and sidebar nav active states
+      function setActiveNav(targetId) {
+        navButtons.forEach(btn => { btn.classList.toggle('active', btn.getAttribute('data-target') === targetId); });
+        sidebarButtons.forEach(btn => { btn.classList.toggle('active', btn.getAttribute('data-target') === targetId); });
+      }
+
+      function hideAllSections() {
+        Object.values(sections).forEach(section => {
+          if (section.id === 'home') {
+            section.hidden = false;
+          } else {
+            section.hidden = true;
+          }
+        });
+      }
+      hideAllSections();
+      setActiveNav('home');
+
+      // Header nav click handler
+      navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const target = button.getAttribute('data-target');
+          Object.entries(sections).forEach(([id, sec]) => {
+            sec.hidden = (id !== target);
+          });
+          setActiveNav(target);
+          if(target === 'contact') contactSection.hidden = false;
+          sections[target].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+
+      // Sidebar nav click handler
+      sidebarButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const target = button.getAttribute('data-target');
+          Object.entries(sections).forEach(([id, sec]) => {
+            sec.hidden = (id !== target);
+          });
+          setActiveNav(target);
+          if(target === 'contact') contactSection.hidden = false;
+          sections[target].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+
+      // Refund Assistance button scroll to complaint form and show it
+      const refundCta = document.getElementById('refund-cta');
+      refundCta.addEventListener('click', () => {
+        Object.entries(sections).forEach(([id, sec]) => {
+          sec.hidden = (id !== 'complaint-form-section');
+        });
+        setActiveNav('');
+        sections['complaint-form-section'].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const formSection = sections['complaint-form-section'];
+        formSection.style.transition = 'background-color 0.5s ease';
+        formSection.style.backgroundColor = '#e0f2fe';
+        setTimeout(() => {
+          formSection.style.backgroundColor = 'transparent';
+        }, 900);
+      });
+
+      // Validate email format
+      function validateEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+
+      const fields = {
+        name: {
+          input: form.querySelector('#name'),
+          error: form.querySelector('#error-name'),
+          group: form.querySelector('#group-name')
+        },
+        email: {
+          input: form.querySelector('#email'),
+          error: form.querySelector('#error-email'),
+          group: form.querySelector('#group-email')
+        },
+        complaintType: {
+          input: form.querySelector('#complaint-type'),
+          error: form.querySelector('#error-type'),
+          group: form.querySelector('#group-type')
+        },
+        details: {
+          input: form.querySelector('#details'),
+          error: form.querySelector('#error-details'),
+          group: form.querySelector('#group-details')
+        }
+      };
+
+      function validateField(field) {
+        const value = field.input.value.trim();
+        let valid = true;
+        let message = '';
+        if (!value) {
+          valid = false;
+          message = 'This field is required.';
+        } else {
+          if (field.input.type === 'email') {
+            if (!validateEmail(value)) {
+              valid = false;
+              message = 'Please enter a valid email address.';
+            }
+          }
+          if (field.input.tagName.toLowerCase() === 'select') {
+            if (!field.input.value) {
+              valid = false;
+              message = 'Please select a complaint type.';
+            }
+          }
+        }
+
+        if (!valid) {
+          field.group.classList.add('error');
+          field.error.textContent = message;
+        } else {
+          field.group.classList.remove('error');
+          field.error.textContent = '';
+        }
+        return valid;
+      }
+
+      function validateForm() {
+        let isValid = true;
+        for (const key in fields) {
+          if (!validateField(fields[key])) {
+            isValid = false;
+          }
+        }
+        return isValid;
+      }
+
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        if (validateForm()) {
+          form.querySelector('button[type=submit]').disabled = true;
+          setTimeout(() => {
+            confirmation.style.display = 'block';
+            form.reset();
+            for (const key in fields) {
+              fields[key].group.classList.remove('error');
+              fields[key].error.textContent = '';
+            }
+            form.querySelector('button[type=submit]').disabled = false;
+          }, 800);
+        } else {
+          confirmation.style.display = 'none';
+        }
+      });
+
+      for (const key in fields) {
+        fields[key].input.addEventListener('input', () => validateField(fields[key]));
+        if (fields[key].input.tagName.toLowerCase() === 'select') {
+          fields[key].input.addEventListener('change', () => validateField(fields[key]));
+        }
+      }
+
+      // Login form handling
+      const loginForm = document.getElementById('login-form');
+      const loginMsg = document.getElementById('login-msg');
+
+      loginForm.addEventListener('submit', event => {
+        event.preventDefault();
+        loginMsg.textContent = '';
+        const email = loginForm['login-email'].value.trim();
+        const password = loginForm['login-password'].value.trim();
+
+        if (!email || !password) {
+          loginMsg.textContent = 'Please enter both email and password.';
+          return;
+        }
+
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          loginMsg.textContent = 'Please enter a valid email address.';
+          return;
+        }
+
+        // Simulate login process
+        loginForm.querySelector('button').disabled = true;
+        loginMsg.textContent = 'Logging in...';
+        setTimeout(() => {
+          loginMsg.textContent = 'Login successful! (Demo only, no real backend)';
+          loginForm.querySelector('button').disabled = false;
+          loginForm.reset();
+        }, 1200);
+      });
+
+
+      // Customer comments data and rendering
+      const seedComments = [
+        {text:"Thanks to NPC, my payment issue was resolved within days. The website made the whole complaint process so simple and hassle-free.", author:"Rajesh Kumar", location:"Mumbai, Maharashtra"},
+        {text:"I had a wrong transaction charge, and NPC helped me get my money refunded quickly. Very reliable and user-friendly site!", author:"Priya Singh", location:"Delhi"},
+        {text:"The complaint form was straightforward and the support team responsive. I highly recommend NPC for any service issues.", author:"Amit Sharma", location:"Bangalore, Karnataka"},
+        {text:"Over 3 lakh customers can't be wrong! NPC has been my go-to complaint platform, always quick and trustworthy.", author:"Sneha Reddy", location:"Chennai, Tamil Nadu"},
+        {text:"This site helped me resolve a billing dispute quickly. Professional and trustworthy service.", author:"Suresh Patil", location:"Pune, Maharashtra"},
+        {text:"Excellent customer service and easy-to-use complaint submission. Highly satisfied.", author:"Anjali Mehta", location:"Ahmedabad, Gujarat"},
+        {text:"Got my refund processed fast through NPC's complaint system. Very efficient!", author:"Vikram Desai", location:"Surat, Gujarat"},
+        {text:"Thanks NPC team for your support. Problem resolution was smooth and fast.", author:"Divya Nair", location:"Kochi, Kerala"}
+      ];
+
+      // Indian first and last names for randomization
+      const firstNames = ["Rohit","Neha","Sanjay","Pooja","Rahul","Anita","Kiran","Sapna","Manish","Deepa",
+                          "Vishal","Jyoti","Suresh","Meena","Ajay","Rekha","Sanjana","Arun","Sunita","Vikram",
+                          "Ramesh","Kirti","Nitin","Asha","Prakash","Seema","Kunal","Ritika","Harish","Neeta"];
+      const lastNames = ["Sharma","Singh","Patel","Kumar","Gupta","Mehta","Desai","Joshi","Reddy","Nair",
+                         "Malhotra","Iyer","Chatterjee","Sinha","Bose","Mukherjee","Trivedi","Chauhan","Bagga","Gill"];
+
+      // Locations (Cities + states)
+      const locations = ["Mumbai, Maharashtra","Delhi","Bangalore, Karnataka","Chennai, Tamil Nadu","Pune, Maharashtra",
+                         "Hyderabad, Telangana","Ahmedabad, Gujarat","Surat, Gujarat","Jaipur, Rajasthan","Lucknow, Uttar Pradesh",
+                         "Kanpur, Uttar Pradesh","Nagpur, Maharashtra","Indore, Madhya Pradesh","Thane, Maharashtra","Bhopal, Madhya Pradesh",
+                         "Patna, Bihar","Vadodara, Gujarat","Ghaziabad, Uttar Pradesh","Ludhiana, Punjab","Coimbatore, Tamil Nadu"];
+
+      // Comments templates (to add small variability)
+      const commentTemplates = [
+        "Thanks to NPC, my issue was resolved quickly and effectively.",
+        "This website made submitting complaints easy and hassle-free.",
+        "Very satisfied with the speedy resolution via NPC.",
+        "Got my refund quickly through NPC's complaint system.",
+        "Professional and trustworthy service from NPC.",
+        "Customer support was fantastic and responsive.",
+        "Highly recommend NPC for complaint handling.",
+        "I appreciate the clear and simple complaint form.",
+        "Great experience resolving my issue with NPC.",
+        "Thanks NPC! Problem sorted quickly and peacefully."
+      ];
+
+      // Generate random integer between min and max inclusive
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      // Generate a list of ~120 comments based on seed and randomly mixed names, locations, and template text
+      function generateComments() {
+        const comments = [];
+        const total = 120;
+        for (let i = 0; i < total; i++) {
+          // Select a random comment template or seed text
+          let text;
+          if (i < seedComments.length) {
+            text = seedComments[i].text;
+          } else {
+            text = commentTemplates[randomInt(0, commentTemplates.length -1)];
+          }
+          // Generate random author and location
+          const author = firstNames[randomInt(0, firstNames.length -1)] + " " + lastNames[randomInt(0, lastNames.length -1)];
+          const location = locations[randomInt(0, locations.length -1)];
+          comments.push({text, author, location});
+        }
+        return comments;
+      }
+
+      // Render comments in #comment-list container
+      function renderComments() {
+        const container = document.getElementById('comment-list');
+        if (!container) return;
+        const comments = generateComments();
+
+        comments.forEach(({text, author, location}, idx) => {
+          const card = document.createElement('article');
+          card.className = 'comment-card';
+          card.tabIndex = 0;
+          card.setAttribute('aria-label', `Customer comment ${idx+1} by ${author} from ${location}`);
+
+          const p = document.createElement('p');
+          p.textContent = text;
+          card.appendChild(p);
+
+          const authorDiv = document.createElement('div');
+          authorDiv.className = 'comment-author';
+          authorDiv.textContent = author;
+          card.appendChild(authorDiv);
+
+          const locDiv = document.createElement('div');
+          locDiv.className = 'comment-location';
+          locDiv.textContent = location;
+          card.appendChild(locDiv);
+
+          container.appendChild(card);
+        });
+      }
+
+      // Call renderComments on DOMContentLoaded
+      document.addEventListener('DOMContentLoaded', () => {
+        renderComments();
+      });
+
+    })();
+  </script>
+</body>
+</html>
